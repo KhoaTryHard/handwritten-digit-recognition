@@ -1,0 +1,11 @@
+# Core ML stack
+tensorflow
+tensorflow-datasets
+
+# Data and image processing
+numpy
+pillow
+pandas
+
+# Visualization
+matplotlib

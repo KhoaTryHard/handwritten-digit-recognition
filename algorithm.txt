@@ -1,0 +1,126 @@
+PSEUDOCODE NOTES FOR THE CURRENT 3-STAGE PIPELINE
+
+Algorithm 1: Train base CNN on MNIST
+Input:
+- MNIST train set
+- MNIST test set
+
+Output:
+- models/stage_01_mnist_base.keras
+
+Steps:
+1. Load MNIST train and test data.
+2. Normalize pixel values to [0, 1].
+3. Reshape images to (28, 28, 1).
+4. Encode labels for multi-class classification.
+5. Build the CNN model.
+6. Compile the model with Adam and cross-entropy loss.
+7. Train on the MNIST training set.
+8. Evaluate on the MNIST test set.
+9. Save the trained base model.
+
+
+Algorithm 2: Fine-tune on EMNIST digits
+Input:
+- models/stage_01_mnist_base.keras
+- EMNIST digits train and test sets
+
+Output:
+- models/stage_02_emnist_finetuned.keras
+
+Steps:
+1. Load the base MNIST model.
+2. Load EMNIST digits.
+3. Normalize input images.
+4. Apply augmentation:
+   - random rotation
+   - random translation
+   - random zoom
+5. Optionally invert some images and add light speckle noise.
+6. Compile the model with a small learning rate.
+7. Fine-tune on EMNIST.
+8. Save the stage 2 model.
+
+
+Algorithm 3: Train final model on merged personal dataset
+Input:
+- models/stage_02_emnist_finetuned.keras
+- my_digits_28/train
+- my_digits_28/val
+
+Output:
+- models/stage_03_final.keras
+
+Steps:
+1. Load the stage 2 model.
+2. Load the merged 28x28 personal dataset.
+3. Normalize input images.
+4. Apply augmentation:
+   - random rotation
+   - random translation
+   - random zoom
+5. Train with validation monitoring.
+6. Use:
+   - EarlyStopping
+   - ReduceLROnPlateau
+   - ModelCheckpoint
+7. Save the final model.
+
+
+Algorithm 4: Preprocess handwritten input image
+Input:
+- raw handwritten image
+
+Output:
+- tensor (1, 28, 28, 1)
+- preview image in MNIST-like style
+
+Steps:
+1. Load the image and convert it to grayscale.
+2. Normalize background and foreground polarity.
+3. Apply thresholding to create a mask.
+4. Apply dilation and erosion.
+5. Keep only the main connected components.
+6. Crop the digit area.
+7. Resize the digit to fit inside a 28x28 canvas.
+8. Shift the digit toward the center of mass.
+9. Apply a light Gaussian blur.
+10. Convert the result to a normalized tensor.
+
+
+Algorithm 5: Predict with test-time augmentation
+Input:
+- models/stage_03_final.keras
+- one preprocessed image
+
+Output:
+- predicted digit
+- confidence scores
+
+Steps:
+1. Load the final model.
+2. Preprocess the input image.
+3. Repeat prediction multiple times with light augmentation.
+4. Average the output probability vectors.
+5. Sort probabilities in descending order.
+6. Return the top prediction and top-k scores.
+
+
+Algorithm 6: Evaluate with confusion matrix
+Input:
+- models/stage_03_final.keras
+- my_digits_28/val
+
+Output:
+- confusion matrix
+- per-class accuracy
+- exported error samples
+
+Steps:
+1. Load the validation dataset.
+2. Load the final model.
+3. Predict labels for all validation images.
+4. Compare predicted labels with true labels.
+5. Build the confusion matrix.
+6. Compute per-class accuracy.
+7. Export wrong predictions for later analysis.
