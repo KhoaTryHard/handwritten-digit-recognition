@@ -4,48 +4,48 @@ import sys
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 import matplotlib.pyplot as plt
-import numpy as np
-import tensorflow as tf
 
-from digit_pipeline.preprocessing import (
-    predict_tta,
-    preprocess_handwritten_mnist_like,
-)
+from digit_pipeline.inference import load_digit_model, predict_digit_from_image
 from project_paths import project_path
 
 
 MODEL_PATH = project_path("models", "stage_03_final.keras")
+IMAGE_PATH = r"C:\Users\LENOVO\Pictures\Screenshots\Screenshot 2026-04-09 083700.png"
 PREPROCESS_THRESHOLD = 0.18
 TTA_SAMPLES = 30
 
 
 def resolve_image_path() -> str:
+    if IMAGE_PATH:
+        return IMAGE_PATH
+
     if len(sys.argv) >= 2:
         return sys.argv[1]
 
-    raise SystemExit("Usage: python predict_digit_image.py <image_path>")
+    raise SystemExit(
+        "Set IMAGE_PATH in predict_digit_image.py or run: "
+        "python predict_digit_image.py <image_path>"
+    )
 
 
 def main() -> None:
     image_path = resolve_image_path()
-    model = tf.keras.models.load_model(MODEL_PATH)
-    x, preview = preprocess_handwritten_mnist_like(
+    model = load_digit_model(MODEL_PATH)
+    result = predict_digit_from_image(
         image_path,
-        threshold=PREPROCESS_THRESHOLD,
+        model,
+        preprocess_threshold=PREPROCESS_THRESHOLD,
+        tta_samples=TTA_SAMPLES,
     )
-    probabilities = predict_tta(model, x, num_samples=TTA_SAMPLES)
 
-    top5 = probabilities.argsort()[-5:][::-1]
     print("Top-5 predictions:")
-    for digit in top5:
-        print(digit, float(probabilities[digit]))
+    for digit in result.top_indices:
+        print(int(digit), float(result.probabilities[digit]))
 
-    prediction = int(top5[0])
-    confidence = float(probabilities[prediction])
-    print(f"Pred = {prediction} | confidence = {confidence:.4f}")
+    print(f"Pred = {result.prediction} | confidence = {result.confidence:.4f}")
 
-    plt.imshow(preview, cmap="gray")
-    plt.title(f"Pred={prediction}")
+    plt.imshow(result.preview, cmap="gray")
+    plt.title(f"Pred={result.prediction}")
     plt.axis("off")
     plt.show()
 
