@@ -47,7 +47,7 @@ Output:
 ```text
 .
 |- digit_pipeline/              Shared preprocessing, training, data, and evaluation helpers
-|- models/                      Saved model artifacts
+|- models/                      Canonical saved model artifacts for the 3-stage workflow
 |- my_digits_new/               Raw personal handwritten dataset
 |- my_digits_28/                Converted 28x28 personal dataset
 |- reports/                     Analysis exports and reports
@@ -179,7 +179,7 @@ python preview_mnist_samples.py
 - `models/stage_02_emnist_finetuned.keras`: model adapted to EMNIST digits
 - `models/stage_03_final.keras`: final model used for prediction and evaluation
 
-Additional local model files may exist for experimentation, but the three files above define the main workflow.
+The repository intentionally keeps only the three canonical stage outputs above. Extra experimental `.keras` files inside `models/` are ignored by `models/.gitignore` to avoid confusion with the main workflow.
 
 ## Important Configuration
 
@@ -210,4 +210,5 @@ Review these files before running experiments:
 
 - `my_digits_28` is the canonical personal 28x28 dataset used in the current workflow.
 - `my_digits_28_new` has already been merged into `my_digits_28`.
+- `models/.gitignore` ignores non-canonical model exports so only the three official stage artifacts stay tracked.
 - Temporary folders such as `.venv/`, `.idea/`, and `__pycache__/` should not be committed.

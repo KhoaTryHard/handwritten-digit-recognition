@@ -1,0 +1,6 @@
+# Keep only the canonical 3-stage workflow artifacts under version control.
+*
+!.gitignore
+!stage_01_mnist_base.keras
+!stage_02_emnist_finetuned.keras
+!stage_03_final.keras
