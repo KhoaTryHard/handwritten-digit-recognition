@@ -1,77 +1,31 @@
-import random
-import shutil
-from pathlib import Path
+# Module nay tach mot phan du lieu viet tay goc tu train sang validation.
+"""Split the raw personal dataset into train and validation folders."""
 
-from project_paths import project_file
+from __future__ import annotations
 
-
-TRAIN_DIR = project_file("my_digits_new", "train")
-VAL_DIR = project_file("my_digits_new", "val")
-VAL_RATIO = 0.2
-SEED = 42
-
-IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".webp"}
+from digit_pipeline.config import project_file
+from digit_pipeline.data_loading import DataSplitConfig, split_personal_dataset
 
 
-def list_image_files(directory: Path) -> list[Path]:
-    return [
-        file_path
-        for file_path in directory.iterdir()
-        if file_path.is_file() and file_path.suffix.lower() in IMAGE_EXTENSIONS
-    ]
-
-
-def build_unique_destination(destination: Path) -> Path:
-    if not destination.exists():
-        return destination
-
-    suffix = 1
-    while True:
-        candidate = destination.with_name(
-            f"{destination.stem}_val{suffix}{destination.suffix}"
-        )
-        if not candidate.exists():
-            return candidate
-        suffix += 1
+CONFIG = DataSplitConfig(
+    train_dir=project_file("my_digits_new", "train"),
+    val_dir=project_file("my_digits_new", "val"),
+    val_ratio=0.2,
+    seed=42,
+)
 
 
 def main() -> None:
-    random.seed(SEED)
+    """Run the train/validation split for personal images."""
+    summary = split_personal_dataset(CONFIG)
 
-    if not TRAIN_DIR.is_dir():
-        raise FileNotFoundError(f"TRAIN_DIR not found: {TRAIN_DIR}")
+    # In thong ke theo tung lop de de kiem tra bo du lieu sau khi tach.
+    for digit_label, moved_count in summary.moved_per_class.items():
+        print(f"[{digit_label}] moved {moved_count} image(s) -> val")
 
-    VAL_DIR.mkdir(parents=True, exist_ok=True)
-    total_moved = 0
-
-    for digit in map(str, range(10)):
-        source_dir = TRAIN_DIR / digit
-        destination_dir = VAL_DIR / digit
-
-        if not source_dir.is_dir():
-            print(f"[WARN] Missing class folder: {source_dir} (skip)")
-            continue
-
-        destination_dir.mkdir(parents=True, exist_ok=True)
-        files = list_image_files(source_dir)
-
-        if not files:
-            print(f"[WARN] No images in: {source_dir}")
-            continue
-
-        random.shuffle(files)
-        move_count = max(1, int(round(len(files) * VAL_RATIO))) if len(files) >= 5 else 1
-
-        for file_path in files[:move_count]:
-            destination_path = build_unique_destination(destination_dir / file_path.name)
-            shutil.move(str(file_path), str(destination_path))
-            total_moved += 1
-
-        print(f"[{digit}] moved {move_count}/{len(files)} -> val")
-
-    print(f"\nDone. Total moved: {total_moved}")
-    print(f"Train: {TRAIN_DIR}")
-    print(f"Val  : {VAL_DIR}")
+    print(f"\nDone. Total moved: {summary.total_moved}")
+    print(f"Train: {CONFIG.train_dir}")
+    print(f"Val  : {CONFIG.val_dir}")
 
 
 if __name__ == "__main__":

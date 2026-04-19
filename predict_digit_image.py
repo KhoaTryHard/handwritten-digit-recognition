@@ -1,21 +1,23 @@
-import os
-import sys
+# Module nay du doan mot anh don le bang pipeline suy luan dung chung.
+"""Predict a digit for a single image path."""
 
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+from __future__ import annotations
+
+import sys
 
 import matplotlib.pyplot as plt
 
-from digit_pipeline.inference import load_digit_model, predict_digit_from_image
-from project_paths import project_path
+from digit_pipeline.config import PredictionDefaults, project_file
+from digit_pipeline.evaluation import load_digit_model, predict_digit_from_image
 
 
-MODEL_PATH = project_path("models", "stage_03_final.keras")
-IMAGE_PATH = r"C:\Users\LENOVO\Pictures\Screenshots\Screenshot 2026-04-09 083700.png"
-PREPROCESS_THRESHOLD = 0.18
-TTA_SAMPLES = 30
+MODEL_PATH = project_file("models", "stage_03_final.keras")
+IMAGE_PATH: str | None = None
+PREDICTION_DEFAULTS = PredictionDefaults()
 
 
 def resolve_image_path() -> str:
+    """Resolve the image path from the script constant or CLI argument."""
     if IMAGE_PATH:
         return IMAGE_PATH
 
@@ -29,21 +31,24 @@ def resolve_image_path() -> str:
 
 
 def main() -> None:
+    """Run prediction for one image and display the preview."""
     image_path = resolve_image_path()
     model = load_digit_model(MODEL_PATH)
     result = predict_digit_from_image(
         image_path,
         model,
-        preprocess_threshold=PREPROCESS_THRESHOLD,
-        tta_samples=TTA_SAMPLES,
+        preprocess_threshold=PREDICTION_DEFAULTS.preprocess_threshold,
+        tta_samples=PREDICTION_DEFAULTS.tta_samples,
+        top_k=PREDICTION_DEFAULTS.top_k,
     )
 
-    print("Top-5 predictions:")
-    for digit in result.top_indices:
-        print(int(digit), float(result.probabilities[digit]))
+    print("Top predictions:")
+    for digit_index in result.top_indices:
+        print(int(digit_index), float(result.probabilities[digit_index]))
 
     print(f"Pred = {result.prediction} | confidence = {result.confidence:.4f}")
 
+    # Hien thi anh preview sau tien xu ly de doi chieu voi ket qua du doan.
     plt.imshow(result.preview, cmap="gray")
     plt.title(f"Pred={result.prediction}")
     plt.axis("off")

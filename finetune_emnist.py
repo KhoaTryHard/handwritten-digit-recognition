@@ -1,80 +1,49 @@
-import os
+# Module nay chay stage 2 de fine-tune model MNIST tren EMNIST.
+"""Fine-tune the base classifier on EMNIST digits."""
 
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+from __future__ import annotations
 
-from pathlib import Path
-
-import tensorflow as tf
-import tensorflow_datasets as tfds
-
-from digit_pipeline.data import build_digit_augmenter
-from project_paths import project_file
+from digit_pipeline.config import project_file
+from digit_pipeline.training import EmnistTrainingConfig, train_emnist_stage
 
 
-BATCH_SIZE = 128
-EPOCHS = 5
-INPUT_MODEL = project_file("models", "stage_01_mnist_base.keras")
-OUTPUT_MODEL = project_file("models", "stage_02_emnist_finetuned.keras")
-
-EMNIST_AUGMENTER = build_digit_augmenter(
+CONFIG = EmnistTrainingConfig(
+    input_model_path=project_file("models", "stage_01_mnist_base.keras"),
+    output_model_path=project_file("models", "stage_02_emnist_finetuned.keras"),
+    batch_size=128,
+    epochs=5,
+    learning_rate=1e-4,
     rotation=0.10,
     translation=0.15,
     zoom=0.12,
 )
 
 
-def normalize_sample(x: tf.Tensor, y: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
-    x = tf.cast(x, tf.float32) / 255.0
-    if x.shape.rank == 2:
-        x = tf.expand_dims(x, -1)
-    return x, y
+def validate_dependencies() -> None:
+    """Ensure optional TFDS resources are available before training."""
+    try:
+        import importlib.resources  # noqa: F401
+        return
+    except ModuleNotFoundError:
+        pass
 
-
-def add_speckle_noise(x: tf.Tensor, probability: float = 0.002) -> tf.Tensor:
-    dots = tf.cast(tf.random.uniform(tf.shape(x)) < probability, tf.float32)
-    return tf.clip_by_value(x + 0.8 * dots, 0.0, 1.0)
-
-
-def train_map(x: tf.Tensor, y: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
-    x = EMNIST_AUGMENTER(x, training=True)
-    flip_mask = tf.random.uniform([tf.shape(x)[0], 1, 1, 1]) < 0.5
-    x = tf.where(flip_mask, x, 1.0 - x)
-    x = add_speckle_noise(x)
-    return x, y
+    try:
+        import importlib_resources  # noqa: F401
+    except ModuleNotFoundError as exc:
+        raise SystemExit(
+            "Missing importlib resource support. "
+            "Run 'pip install -r requirements.txt' and try again."
+        ) from exc
 
 
 def main() -> None:
-    Path(OUTPUT_MODEL).parent.mkdir(parents=True, exist_ok=True)
-
-    train_ds, test_ds = tfds.load(
-        "emnist/digits",
-        split=["train", "test"],
-        as_supervised=True,
-    )
-
-    train_ds = (
-        train_ds.map(normalize_sample, num_parallel_calls=tf.data.AUTOTUNE)
-        .shuffle(10_000)
-        .batch(BATCH_SIZE)
-        .map(train_map, num_parallel_calls=tf.data.AUTOTUNE)
-        .prefetch(tf.data.AUTOTUNE)
-    )
-    test_ds = (
-        test_ds.map(normalize_sample, num_parallel_calls=tf.data.AUTOTUNE)
-        .batch(BATCH_SIZE)
-        .prefetch(tf.data.AUTOTUNE)
-    )
-
-    model = tf.keras.models.load_model(INPUT_MODEL)
-    model.compile(
-        optimizer=tf.keras.optimizers.Adam(1e-4),
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-        metrics=["accuracy"],
-    )
-
-    model.fit(train_ds, validation_data=test_ds, epochs=EPOCHS)
-    model.save(OUTPUT_MODEL)
-    print(f"Saved: {OUTPUT_MODEL}")
+    """Run stage 2 fine-tuning on EMNIST."""
+    validate_dependencies()
+    result = train_emnist_stage(CONFIG)
+    if result.validation_accuracy is not None:
+        print(f"Validation accuracy: {result.validation_accuracy * 100:.2f}%")
+    print(f"Classes: {list(result.class_names)}")
+    print(f"Saved: {result.output_model_path}")
 
 
 if __name__ == "__main__":

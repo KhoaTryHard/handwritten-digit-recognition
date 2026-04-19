@@ -1,11 +1,15 @@
+# Tep nay pin version on dinh cho moi truong cua project.
+# Regenerate with: pip-compile requirements.in --output-file requirements.txt
+
 # Core ML stack
-tensorflow
-tensorflow-datasets
+tensorflow==2.21.0
+tensorflow-datasets==4.9.9
+protobuf==7.34.1
 
 # Data and image processing
-numpy
-pillow
-pandas
+numpy==2.4.4
+pillow==12.2.0
+pandas==3.0.2
 
 # Visualization
-matplotlib
+matplotlib==3.10.8

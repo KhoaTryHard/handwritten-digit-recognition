@@ -1,19 +1,24 @@
-import os
+# Module nay mo app desktop de chon anh, xem preview va ket qua du doan.
+"""Desktop app for handwritten digit prediction."""
 
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+from __future__ import annotations
 
 import tkinter as tk
+from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
 from PIL import Image, ImageTk
 
-from digit_pipeline.inference import load_digit_model, predict_digit_from_image
-from project_paths import project_path
+from digit_pipeline.config import PredictionDefaults, project_file
+from digit_pipeline.evaluation import (
+    SingleImagePrediction,
+    load_digit_model,
+    predict_digit_from_image,
+)
 
 
-MODEL_PATH = project_path("models", "stage_03_final.keras")
-PREPROCESS_THRESHOLD = 0.18
-TTA_SAMPLES = 30
+MODEL_PATH = project_file("models", "stage_03_final.keras")
+PREDICTION_DEFAULTS = PredictionDefaults()
 IMAGE_FILE_TYPES = [
     ("Image files", "*.png *.jpg *.jpeg *.bmp *.webp"),
     ("All files", "*.*"),
@@ -22,14 +27,17 @@ PREVIEW_SIZE = (320, 320)
 
 
 class DigitPredictionApp:
+    """Tkinter app for choosing an image and showing predictions."""
+
     def __init__(self, root: tk.Tk) -> None:
+        """Initialize the UI and schedule model loading."""
         self.root = root
         self.root.title("Handwritten Digit Demo")
         self.root.geometry("980x680")
         self.root.minsize(900, 600)
 
         self.model = None
-        self.current_image_path = ""
+        self.current_image_path: Path | None = None
         self.original_photo: ImageTk.PhotoImage | None = None
         self.processed_photo: ImageTk.PhotoImage | None = None
 
@@ -48,6 +56,7 @@ class DigitPredictionApp:
         self.root.after(100, self._load_model)
 
     def _build_ui(self) -> None:
+        """Build the application layout."""
         style = ttk.Style()
         if "clam" in style.theme_names():
             style.theme_use("clam")
@@ -69,10 +78,14 @@ class DigitPredictionApp:
         ).grid(row=0, column=0, sticky="w")
         ttk.Label(
             header,
-            text="Choose an image, run the trained model, and compare the original input with the processed 28x28 preview.",
+            text=(
+                "Choose an image, run the trained model, and compare the original "
+                "input with the processed 28x28 preview."
+            ),
             wraplength=760,
         ).grid(row=1, column=0, sticky="w", pady=(6, 0))
 
+        # Khu vuc ben trai de chon anh va xem 2 preview.
         actions = ttk.Frame(container)
         actions.grid(row=1, column=0, sticky="nsew", padx=(0, 16))
         actions.columnconfigure(0, weight=1)
@@ -139,6 +152,7 @@ class DigitPredictionApp:
         )
         self.processed_panel.grid(row=0, column=0, sticky="nsew")
 
+        # Khu vuc ben phai hien du doan, confidence va top-k.
         result_card = ttk.LabelFrame(container, text="Prediction", padding=16)
         result_card.grid(row=1, column=1, sticky="nsew")
         result_card.columnconfigure(0, weight=1)
@@ -169,19 +183,16 @@ class DigitPredictionApp:
         top_frame.grid(row=5, column=0, sticky="ew", pady=(8, 0))
         top_frame.columnconfigure(0, weight=1)
 
-        for index in range(5):
+        for index in range(PREDICTION_DEFAULTS.top_k):
             label = ttk.Label(top_frame, text=f"{index + 1}. -", font=("Consolas", 11))
             label.grid(row=index, column=0, sticky="w", pady=2)
             self.top_labels.append(label)
 
-        status_bar = ttk.Label(
-            container,
-            textvariable=self.status_var,
-            anchor="w",
-        )
+        status_bar = ttk.Label(container, textvariable=self.status_var, anchor="w")
         status_bar.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(12, 0))
 
     def _load_model(self) -> None:
+        """Load the trained model in the background after startup."""
         try:
             self.model = load_digit_model(MODEL_PATH)
         except Exception as exc:
@@ -196,20 +207,22 @@ class DigitPredictionApp:
         self.status_var.set("Model loaded. Choose an image to start the demo.")
 
     def choose_image(self) -> None:
-        image_path = filedialog.askopenfilename(
+        """Open a file dialog and trigger prediction for the chosen image."""
+        selected_path = filedialog.askopenfilename(
             title="Choose an image for prediction",
             filetypes=IMAGE_FILE_TYPES,
         )
-        if not image_path:
+        if not selected_path:
             return
 
-        self.current_image_path = image_path
-        self.path_var.set(image_path)
+        self.current_image_path = Path(selected_path)
+        self.path_var.set(selected_path)
         self.retry_button.configure(state="normal")
         self.predict_current_image()
 
     def predict_current_image(self) -> None:
-        if not self.current_image_path:
+        """Run prediction for the current image and refresh the UI."""
+        if self.current_image_path is None:
             messagebox.showinfo("No Image", "Choose an image first.")
             return
 
@@ -225,8 +238,9 @@ class DigitPredictionApp:
             result = predict_digit_from_image(
                 self.current_image_path,
                 self.model,
-                preprocess_threshold=PREPROCESS_THRESHOLD,
-                tta_samples=TTA_SAMPLES,
+                preprocess_threshold=PREDICTION_DEFAULTS.preprocess_threshold,
+                tta_samples=PREDICTION_DEFAULTS.tta_samples,
+                top_k=PREDICTION_DEFAULTS.top_k,
             )
         except Exception as exc:
             self.status_var.set("Prediction failed.")
@@ -238,33 +252,42 @@ class DigitPredictionApp:
         finally:
             self.root.config(cursor="")
 
-        self._set_original_preview(self.current_image_path)
-        self._set_processed_preview(result.preview)
+        self._update_prediction_ui(result)
+        self.status_var.set("Prediction complete.")
+
+    def _update_prediction_ui(self, result: SingleImagePrediction) -> None:
+        """Update image previews and score labels."""
+        if self.current_image_path is None:
+            return
+
+        self._show_original_preview(self.current_image_path)
+        self._show_processed_preview(result.preview)
         self.prediction_var.set(str(result.prediction))
         self.confidence_var.set(f"{result.confidence * 100:.2f}%")
 
-        for rank, digit in enumerate(result.top_indices, start=1):
-            probability = float(result.probabilities[digit])
+        for rank, digit_index in enumerate(result.top_indices, start=1):
+            probability = float(result.probabilities[digit_index])
             self.top_labels[rank - 1].configure(
-                text=f"{rank}. digit {int(digit)}  {probability * 100:6.2f}%"
+                text=f"{rank}. digit {int(digit_index)}  {probability * 100:6.2f}%"
             )
 
-        self.status_var.set("Prediction complete.")
-
-    def _set_original_preview(self, image_path: str) -> None:
+    def _show_original_preview(self, image_path: Path) -> None:
+        """Render the original image inside the left preview panel."""
         with Image.open(image_path) as image:
-            display = image.convert("RGB")
-        display.thumbnail(PREVIEW_SIZE, Image.Resampling.LANCZOS)
-        self.original_photo = ImageTk.PhotoImage(display)
+            display_image = image.convert("RGB")
+        display_image.thumbnail(PREVIEW_SIZE, Image.Resampling.LANCZOS)
+        self.original_photo = ImageTk.PhotoImage(display_image)
         self.original_panel.configure(image=self.original_photo, text="")
 
-    def _set_processed_preview(self, image: Image.Image) -> None:
-        display = image.resize(PREVIEW_SIZE, Image.Resampling.NEAREST).convert("L")
-        self.processed_photo = ImageTk.PhotoImage(display)
+    def _show_processed_preview(self, image: Image.Image) -> None:
+        """Render the processed 28x28 preview inside the right panel."""
+        display_image = image.resize(PREVIEW_SIZE, Image.Resampling.NEAREST).convert("L")
+        self.processed_photo = ImageTk.PhotoImage(display_image)
         self.processed_panel.configure(image=self.processed_photo, text="")
 
 
 def main() -> None:
+    """Start the desktop prediction application."""
     root = tk.Tk()
     DigitPredictionApp(root)
     root.mainloop()

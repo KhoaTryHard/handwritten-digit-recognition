@@ -1,0 +1,9 @@
+# Tep nay liet ke dependency muc cao de tao requirements.txt bang pip-compile.
+# Regenerate with: pip-compile requirements.in --output-file requirements.txt
+tensorflow
+tensorflow-datasets
+protobuf
+numpy
+pillow
+pandas
+matplotlib
