@@ -1,5 +1,5 @@
 # Module nay thuc hien tien xu ly va suy luan mot anh chu so don le.
-"""Single-image inference helpers."""
+"""Helper inference cho anh don le."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from digit_pipeline.preprocessing import build_digit_augmenter, preprocess_handw
 
 @dataclass(frozen=True)
 class SingleImagePrediction:
-    """Prediction details for one image."""
+    """Chi tiet prediction cho mot anh."""
 
     image_path: str
     probabilities: np.ndarray
@@ -26,7 +26,7 @@ class SingleImagePrediction:
 
 
 def load_digit_model(model_path: str | Path) -> tf.keras.Model:
-    """Load a saved Keras digit classifier."""
+    """Load bo phan lop chu so Keras da luu."""
     return tf.keras.models.load_model(model_path)
 
 
@@ -37,7 +37,7 @@ def _predict_with_tta(
     image_batch: tf.Tensor,
     num_samples: int,
 ) -> tf.Tensor:
-    """Predict one batch with test-time augmentation and averaging."""
+    """Predict mot batch voi test-time augmentation va lay trung binh."""
     repeated_images = tf.repeat(image_batch, repeats=num_samples, axis=0)
     augmented_images = augmenter(repeated_images, training=True)
     probability_batch = model(augmented_images, training=False)
@@ -56,7 +56,7 @@ def predict_digit_from_image(
     tta_samples: int = 30,
     top_k: int = 5,
 ) -> SingleImagePrediction:
-    """Predict a handwritten digit from an image path."""
+    """Predict chu so viet tay tu duong dan anh."""
     processed_image = preprocess_handwritten_image(
         image_path,
         threshold=preprocess_threshold,

@@ -1,5 +1,5 @@
 # Module nay gom dataclass cau hinh train va cac ham chay tung stage.
-"""Training configuration and execution helpers."""
+"""Helper cau hinh va thuc thi training."""
 
 from digit_pipeline.training.configs import (
     CallbackConfig,

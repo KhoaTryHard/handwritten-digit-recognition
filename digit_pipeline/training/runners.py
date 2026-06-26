@@ -1,5 +1,5 @@
 # Module nay chua logic train va fine-tune de cac script top-level goi lai.
-"""Training runners for MNIST and transfer-learning stages."""
+"""Runner training cho MNIST va cac stage transfer-learning."""
 
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ from digit_pipeline.utils import configure_runtime
 
 @dataclass(frozen=True)
 class TrainingResult:
-    """Summary information returned after a training stage."""
+    """Thong tin tom tat tra ve sau mot training stage."""
 
     output_model_path: str
     class_names: tuple[str, ...]
@@ -43,7 +43,7 @@ def ensure_model_matches_classes(
     model: tf.keras.Model,
     class_names: tuple[str, ...],
 ) -> None:
-    """Validate that model outputs match dataset classes."""
+    """Kiem tra output cua model khop voi cac lop dataset."""
     output_classes = int(model.output_shape[-1])
     if output_classes != len(class_names):
         raise ValueError(
@@ -55,7 +55,7 @@ def build_training_callbacks(
     output_model_path: str,
     callback_config: CallbackConfig,
 ) -> list[tf.keras.callbacks.Callback]:
-    """Build the standard fine-tuning callback stack."""
+    """Tao callback stack fine-tuning chuan."""
     ensure_parent_directory(output_model_path)
     return [
         tf.keras.callbacks.EarlyStopping(
@@ -78,7 +78,7 @@ def build_training_callbacks(
 
 
 def _compile_classifier(model: tf.keras.Model, learning_rate: float) -> None:
-    """Compile a model for sparse multi-class classification."""
+    """Compile model cho bai toan phan lop nhieu lop sparse."""
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
         loss=tf.keras.losses.SparseCategoricalCrossentropy(),
@@ -92,7 +92,7 @@ def _evaluate_and_save_model(
     output_model_path: str,
     class_names: tuple[str, ...],
 ) -> TrainingResult:
-    """Evaluate a model, save it, and return a compact summary."""
+    """Evaluate model, luu model va tra ve tom tat ngan gon."""
     evaluation = model.evaluate(val_ds, verbose=0, return_dict=True)
     model.save(output_model_path)
     return TrainingResult(
@@ -107,7 +107,7 @@ def _run_transfer_stage(
     train_ds: tf.data.Dataset,
     config: TransferLearningConfig,
 ) -> TrainingResult:
-    """Fine-tune an existing classifier on a prepared dataset."""
+    """Fine-tune bo phan lop hien co tren dataset da chuan bi."""
     model = tf.keras.models.load_model(config.input_model_path)
     ensure_model_matches_classes(model, datasets.class_names)
 
@@ -133,7 +133,7 @@ def _run_transfer_stage(
 
 
 def train_mnist_stage(config: MnistTrainingConfig) -> TrainingResult:
-    """Train the base CNN on MNIST."""
+    """Train CNN nen tren MNIST."""
     configure_runtime(RuntimeConfig(seed=config.seed))
     datasets = build_mnist_datasets(batch_size=config.batch_size, seed=config.seed)
     model = build_base_digit_cnn(num_classes=len(datasets.class_names))
@@ -157,7 +157,7 @@ def train_mnist_stage(config: MnistTrainingConfig) -> TrainingResult:
 
 
 def train_emnist_stage(config: EmnistTrainingConfig) -> TrainingResult:
-    """Fine-tune the MNIST model on EMNIST digits."""
+    """Fine-tune model MNIST tren EMNIST digits."""
     configure_runtime(RuntimeConfig(seed=config.seed))
     datasets = load_emnist_datasets(batch_size=config.batch_size, seed=config.seed)
     augmenter = build_digit_augmenter(
@@ -176,7 +176,7 @@ def train_emnist_stage(config: EmnistTrainingConfig) -> TrainingResult:
 
 
 def fine_tune_directory_stage(config: DirectoryFineTuneConfig) -> TrainingResult:
-    """Fine-tune a classifier on a directory-based handwritten dataset."""
+    """Fine-tune bo phan lop tren dataset viet tay dang thu muc."""
     configure_runtime(RuntimeConfig(seed=config.seed))
     datasets = load_directory_datasets(
         train_dir=config.train_dir,

@@ -1,5 +1,5 @@
 # Module nay lam sach anh viet tay va dua ve dang 28x28 giong MNIST.
-"""Image preprocessing for handwritten digit normalization."""
+"""Preprocessing anh de chuan hoa chu so viet tay."""
 
 from __future__ import annotations
 
@@ -15,14 +15,14 @@ from digit_pipeline.utils import list_image_files
 
 @dataclass(frozen=True)
 class ProcessedDigitImage:
-    """A normalized tensor paired with a preview image."""
+    """Tensor da chuan hoa kem theo anh preview."""
 
     tensor: np.ndarray
     preview: Image.Image
 
 
 def dilate_mask(mask: np.ndarray, iterations: int = 1) -> np.ndarray:
-    """Dilate a binary mask using a 3x3 neighborhood."""
+    """Dilate binary mask bang lan can 3x3."""
     current_mask = mask.copy()
     height, width = current_mask.shape
 
@@ -41,7 +41,7 @@ def dilate_mask(mask: np.ndarray, iterations: int = 1) -> np.ndarray:
 
 
 def erode_mask(mask: np.ndarray, iterations: int = 1) -> np.ndarray:
-    """Erode a binary mask using a 3x3 neighborhood."""
+    """Erode binary mask bang lan can 3x3."""
     current_mask = mask.copy()
     height, width = current_mask.shape
 
@@ -65,7 +65,7 @@ def keep_large_components(
     min_pixels: int = 25,
     keep_ratio: float = 0.25,
 ) -> np.ndarray:
-    """Keep connected components that are large enough to be a digit."""
+    """Giu cac connected component du lon de co the la chu so."""
     height, width = mask.shape
     visited = np.zeros_like(mask, dtype=bool)
     components: list[list[tuple[int, int]]] = []
@@ -114,7 +114,7 @@ def keep_large_components(
 
 
 def shift_image(image: np.ndarray, shift_x: int, shift_y: int) -> np.ndarray:
-    """Shift an image on a zero-padded canvas."""
+    """Dich anh tren canvas dem bang zero."""
     height, width = image.shape
     shifted_image = np.zeros_like(image)
 
@@ -140,7 +140,7 @@ def preprocess_handwritten_image(
     *,
     threshold: float = 0.22,
 ) -> ProcessedDigitImage:
-    """Convert a handwritten image into a normalized MNIST-like tensor."""
+    """Chuyen anh viet tay thanh tensor da chuan hoa giong MNIST."""
     with Image.open(image_path) as raw_image:
         rgba_image = ImageOps.exif_transpose(raw_image).convert("RGBA")
 
@@ -215,7 +215,7 @@ def convert_dataset_directory(
     *,
     threshold: float = 0.22,
 ) -> int:
-    """Convert a class-organized image directory into 28x28 MNIST-like images."""
+    """Chuyen thu muc anh theo lop thanh anh 28x28 giong MNIST."""
     source_root = Path(source_dir)
     destination_root = Path(destination_dir)
     destination_root.mkdir(parents=True, exist_ok=True)

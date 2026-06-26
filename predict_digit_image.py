@@ -1,5 +1,5 @@
 # Module nay du doan mot anh don le bang pipeline suy luan dung chung.
-"""Predict a digit for a single image path."""
+"""Du doan chu so cho mot duong dan anh don le."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ PREDICTION_DEFAULTS = PredictionDefaults()
 
 
 def resolve_image_path() -> str:
-    """Resolve the image path from the script constant or CLI argument."""
+    """Xac dinh duong dan anh tu constant trong script hoac tham so CLI."""
     if IMAGE_PATH:
         return IMAGE_PATH
 
@@ -31,7 +31,7 @@ def resolve_image_path() -> str:
 
 
 def main() -> None:
-    """Run prediction for one image and display the preview."""
+    """Chay prediction cho mot anh va hien thi preview."""
     image_path = resolve_image_path()
     model = load_digit_model(MODEL_PATH)
     result = predict_digit_from_image(

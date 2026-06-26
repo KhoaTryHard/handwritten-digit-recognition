@@ -1,5 +1,5 @@
 # Module nay thu thap du doan tren tap val va xuat bao cao confusion.
-"""Batch evaluation and reporting helpers."""
+"""Helper evaluation theo batch va tao bao cao."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from digit_pipeline.evaluation.inference import load_digit_model
 
 @dataclass(frozen=True)
 class DirectoryPredictions:
-    """Predictions collected for a class-organized directory."""
+    """Prediction thu thap tu thu muc duoc to chuc theo lop."""
 
     class_names: tuple[str, ...]
     file_paths: tuple[str, ...]
@@ -29,7 +29,7 @@ class DirectoryPredictions:
 
 @dataclass(frozen=True)
 class ClassAccuracy:
-    """Accuracy details for a single class."""
+    """Chi tiet accuracy cho mot lop."""
 
     label: str
     accuracy: float
@@ -39,7 +39,7 @@ class ClassAccuracy:
 
 @dataclass(frozen=True)
 class ConfusionPair:
-    """One non-diagonal confusion entry."""
+    """Mot entry confusion nam ngoai duong cheo chinh."""
 
     true_label: str
     predicted_label: str
@@ -48,7 +48,7 @@ class ConfusionPair:
 
 @dataclass(frozen=True)
 class ConfusionSummary:
-    """Derived confusion-matrix statistics."""
+    """Thong ke suy ra tu confusion matrix."""
 
     confusion_matrix: np.ndarray
     per_class_accuracy: tuple[ClassAccuracy, ...]
@@ -63,7 +63,7 @@ def collect_directory_predictions(
     *,
     keep_images: bool = False,
 ) -> DirectoryPredictions:
-    """Collect model predictions for all images in a directory dataset."""
+    """Thu thap prediction cua model cho moi anh trong directory dataset."""
     datasets = load_evaluation_directory_dataset(directory, batch_size)
     model = load_digit_model(model_path)
 
@@ -117,7 +117,7 @@ def build_confusion_summary(
     *,
     max_pairs: int = 15,
 ) -> ConfusionSummary:
-    """Build confusion matrix statistics from directory predictions."""
+    """Tao thong ke confusion matrix tu prediction theo thu muc."""
     confusion_matrix = tf.math.confusion_matrix(
         predictions.y_true,
         predictions.y_pred,
@@ -173,7 +173,7 @@ def export_misclassified_predictions(
     predictions: DirectoryPredictions,
     output_csv: str | Path,
 ) -> pd.DataFrame:
-    """Export misclassified samples to a CSV file."""
+    """Export cac mau bi du doan sai ra file CSV."""
     wrong_indices = np.flatnonzero(predictions.y_true != predictions.y_pred)
     rows: list[dict[str, object]] = []
 
@@ -205,7 +205,7 @@ def export_misclassified_predictions(
 
 
 def _resolve_class_index(class_names: tuple[str, ...], label: int | str) -> int:
-    """Resolve a class label or index into a numeric index."""
+    """Quy doi label lop hoac index thanh index dang so."""
     if isinstance(label, int):
         return label
     return class_names.index(str(label))
@@ -219,7 +219,7 @@ def export_confusion_pair_images(
     predicted_label: int | str,
     max_save: int = 50,
 ) -> list[Path]:
-    """Export images for one chosen true/predicted confusion pair."""
+    """Export anh cho mot cap nham lan true/predicted da chon."""
     if predictions.images_u8 is None:
         raise RuntimeError("Raw images were not collected for export.")
 

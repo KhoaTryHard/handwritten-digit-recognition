@@ -1,6 +1,6 @@
-PSEUDOCODE NOTES FOR THE CURRENT 3-STAGE PIPELINE
+GHI CHU PSEUDOCODE CHO PIPELINE 3 STAGE HIEN TAI
 
-Algorithm 1: Train base CNN on MNIST
+Algorithm 1: Train CNN nen tren MNIST
 Input:
 - MNIST train set
 - MNIST test set
@@ -9,18 +9,18 @@ Output:
 - models/stage_01_mnist_base.keras
 
 Steps:
-1. Load MNIST train and test data.
-2. Normalize pixel values to [0, 1].
-3. Reshape images to (28, 28, 1).
-4. Encode labels for multi-class classification.
-5. Build the CNN model.
-6. Compile the model with Adam and cross-entropy loss.
-7. Train on the MNIST training set.
-8. Evaluate on the MNIST test set.
-9. Save the trained base model.
+1. Load du lieu train va test cua MNIST.
+2. Chuan hoa gia tri pixel ve [0, 1].
+3. Reshape anh ve (28, 28, 1).
+4. Encode label cho bai toan phan lop nhieu lop.
+5. Build CNN model.
+6. Compile model voi Adam va cross-entropy loss.
+7. Train tren MNIST training set.
+8. Evaluate tren MNIST test set.
+9. Luu model nen da train.
 
 
-Algorithm 2: Fine-tune on EMNIST digits
+Algorithm 2: Fine-tune tren EMNIST digits
 Input:
 - models/stage_01_mnist_base.keras
 - EMNIST digits train and test sets
@@ -29,20 +29,20 @@ Output:
 - models/stage_02_emnist_finetuned.keras
 
 Steps:
-1. Load the base MNIST model.
+1. Load model MNIST nen.
 2. Load EMNIST digits.
-3. Normalize input images.
-4. Apply augmentation:
+3. Chuan hoa anh dau vao.
+4. Ap dung augmentation:
    - random rotation
    - random translation
    - random zoom
-5. Optionally invert some images and add light speckle noise.
-6. Compile the model with a small learning rate.
-7. Fine-tune on EMNIST.
-8. Save the stage 2 model.
+5. Tuy chon dao mau mot so anh va them speckle noise nhe.
+6. Compile model voi learning rate nho.
+7. Fine-tune tren EMNIST.
+8. Luu model stage 2.
 
 
-Algorithm 3: Train final model on merged personal dataset
+Algorithm 3: Train model cuoi tren dataset ca nhan da merge
 Input:
 - models/stage_02_emnist_finetuned.keras
 - my_digits_28/train
@@ -52,43 +52,43 @@ Output:
 - models/stage_03_final.keras
 
 Steps:
-1. Load the stage 2 model.
-2. Load the merged 28x28 personal dataset.
-3. Normalize input images.
-4. Apply augmentation:
+1. Load model stage 2.
+2. Load dataset ca nhan 28x28 da merge.
+3. Chuan hoa anh dau vao.
+4. Ap dung augmentation:
    - random rotation
    - random translation
    - random zoom
-5. Train with validation monitoring.
-6. Use:
+5. Train voi validation monitoring.
+6. Su dung:
    - EarlyStopping
    - ReduceLROnPlateau
    - ModelCheckpoint
-7. Save the final model.
+7. Luu model cuoi.
 
 
-Algorithm 4: Preprocess handwritten input image
+Algorithm 4: Preprocess anh viet tay dau vao
 Input:
 - raw handwritten image
 
 Output:
 - tensor (1, 28, 28, 1)
-- preview image in MNIST-like style
+- preview image theo style MNIST-like
 
 Steps:
-1. Load the image and convert it to grayscale.
-2. Normalize background and foreground polarity.
-3. Apply thresholding to create a mask.
-4. Apply dilation and erosion.
-5. Keep only the main connected components.
-6. Crop the digit area.
-7. Resize the digit to fit inside a 28x28 canvas.
-8. Shift the digit toward the center of mass.
-9. Apply a light Gaussian blur.
-10. Convert the result to a normalized tensor.
+1. Load anh va chuyen sang grayscale.
+2. Chuan hoa chieu background va foreground.
+3. Ap dung thresholding de tao mask.
+4. Ap dung dilation va erosion.
+5. Chi giu cac connected component chinh.
+6. Crop vung chu so.
+7. Resize chu so de vua ben trong canvas 28x28.
+8. Dich chu so ve gan tam khoi luong.
+9. Ap dung Gaussian blur nhe.
+10. Chuyen ket qua thanh tensor da chuan hoa.
 
 
-Algorithm 5: Predict with test-time augmentation
+Algorithm 5: Predict voi test-time augmentation
 Input:
 - models/stage_03_final.keras
 - one preprocessed image
@@ -98,15 +98,15 @@ Output:
 - confidence scores
 
 Steps:
-1. Load the final model.
-2. Preprocess the input image.
-3. Repeat prediction multiple times with light augmentation.
-4. Average the output probability vectors.
-5. Sort probabilities in descending order.
-6. Return the top prediction and top-k scores.
+1. Load model cuoi.
+2. Preprocess anh dau vao.
+3. Lap lai prediction nhieu lan voi augmentation nhe.
+4. Lay trung binh cac output probability vector.
+5. Sap xep probability theo thu tu giam dan.
+6. Tra ve top prediction va top-k score.
 
 
-Algorithm 6: Evaluate with confusion matrix
+Algorithm 6: Evaluate voi confusion matrix
 Input:
 - models/stage_03_final.keras
 - my_digits_28/val
@@ -117,10 +117,10 @@ Output:
 - exported error samples
 
 Steps:
-1. Load the validation dataset.
-2. Load the final model.
-3. Predict labels for all validation images.
-4. Compare predicted labels with true labels.
-5. Build the confusion matrix.
-6. Compute per-class accuracy.
-7. Export wrong predictions for later analysis.
+1. Load validation dataset.
+2. Load model cuoi.
+3. Predict label cho toan bo anh validation.
+4. So sanh predicted label voi true label.
+5. Tao confusion matrix.
+6. Tinh per-class accuracy.
+7. Export cac prediction sai de phan tich sau.

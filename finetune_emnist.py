@@ -1,5 +1,5 @@
 # Module nay chay stage 2 de fine-tune model MNIST tren EMNIST.
-"""Fine-tune the base classifier on EMNIST digits."""
+"""Fine-tune bo phan lop nen tren EMNIST digits."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ CONFIG = EmnistTrainingConfig(
 
 
 def validate_dependencies() -> None:
-    """Ensure optional TFDS resources are available before training."""
+    """Bao dam resource tuy chon cua TFDS kha dung truoc khi training."""
     try:
         import importlib.resources  # noqa: F401
         return
@@ -37,7 +37,7 @@ def validate_dependencies() -> None:
 
 
 def main() -> None:
-    """Run stage 2 fine-tuning on EMNIST."""
+    """Chay fine-tuning stage 2 tren EMNIST."""
     validate_dependencies()
     result = train_emnist_stage(CONFIG)
     if result.validation_accuracy is not None:

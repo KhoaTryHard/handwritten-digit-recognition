@@ -1,5 +1,5 @@
 # Module nay chay stage 3 de fine-tune tren du lieu viet tay ca nhan 28x28.
-"""Fine-tune the classifier on the personal 28x28 dataset."""
+"""Fine-tune bo phan lop tren dataset ca nhan 28x28."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ CONFIG = DirectoryFineTuneConfig(
 
 
 def main() -> None:
-    """Run stage 3 fine-tuning on the personal dataset."""
+    """Chay fine-tuning stage 3 tren dataset ca nhan."""
     result = fine_tune_directory_stage(CONFIG)
     if result.validation_accuracy is not None:
         print(f"Validation accuracy: {result.validation_accuracy * 100:.2f}%")

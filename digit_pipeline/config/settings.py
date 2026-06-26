@@ -1,5 +1,5 @@
 # Module nay luu cac hang so va cau hinh mac dinh dung chung cho pipeline.
-"""Shared constants and lightweight configuration objects."""
+"""Constant dung chung va object cau hinh nhe."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ IMAGE_EXTENSIONS: frozenset[str] = frozenset(
 
 @dataclass(frozen=True, kw_only=True)
 class RuntimeConfig:
-    """Runtime settings for TensorFlow execution."""
+    """Thiet lap runtime cho qua trinh chay TensorFlow."""
 
     seed: int = DEFAULT_SEED
     enable_gpu_growth: bool = True
@@ -25,7 +25,7 @@ class RuntimeConfig:
 
 @dataclass(frozen=True, kw_only=True)
 class DatasetConfig:
-    """Shared image dataset settings."""
+    """Thiet lap image dataset dung chung."""
 
     image_size: tuple[int, int] = DIGIT_IMAGE_SIZE
     num_classes: int = NUM_DIGIT_CLASSES
@@ -33,7 +33,7 @@ class DatasetConfig:
 
 @dataclass(frozen=True, kw_only=True)
 class PredictionDefaults:
-    """Default preprocessing and inference parameters."""
+    """Tham so preprocessing va inference mac dinh."""
 
     preprocess_threshold: float = 0.18
     tta_samples: int = 30

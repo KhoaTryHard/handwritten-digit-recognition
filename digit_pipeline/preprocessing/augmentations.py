@@ -1,5 +1,5 @@
 # Module nay chua cac ham augmentation batch cho train va test-time augmentation.
-"""TensorFlow augmentation helpers for training and inference."""
+"""Helper augmentation TensorFlow cho training va inference."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ def build_digit_augmenter(
     *,
     name: str = "digit_augmenter",
 ) -> tf.keras.Sequential:
-    """Build the augmentation stack used for digit images."""
+    """Tao augmentation stack dung cho anh chu so."""
     return tf.keras.Sequential(
         [
             tf.keras.layers.RandomRotation(rotation),
@@ -39,7 +39,7 @@ def apply_training_augmentation(
     labels: tf.Tensor,
     augmenter: tf.keras.Sequential,
 ) -> tuple[tf.Tensor, tf.Tensor]:
-    """Apply generic image augmentation to a batch."""
+    """Ap dung augmentation anh tong quat cho mot batch."""
     return augmenter(images, training=True), labels
 
 
@@ -48,7 +48,7 @@ def add_speckle_noise(
     images: tf.Tensor,
     probability: float = 0.002,
 ) -> tf.Tensor:
-    """Add light speckle noise to a batch of normalized images."""
+    """Them speckle noise nhe vao batch anh da chuan hoa."""
     noise_mask = tf.cast(tf.random.uniform(tf.shape(images)) < probability, tf.float32)
     return tf.clip_by_value(images + 0.8 * noise_mask, 0.0, 1.0)
 
@@ -59,7 +59,7 @@ def apply_emnist_augmentation(
     labels: tf.Tensor,
     augmenter: tf.keras.Sequential,
 ) -> tuple[tf.Tensor, tf.Tensor]:
-    """Apply stronger augmentation tailored to EMNIST digits."""
+    """Ap dung augmentation manh hon phu hop voi EMNIST digits."""
     augmented_images = augmenter(images, training=True)
     invert_mask = tf.random.uniform([tf.shape(augmented_images)[0], 1, 1, 1]) < 0.5
     augmented_images = tf.where(invert_mask, augmented_images, 1.0 - augmented_images)
@@ -73,10 +73,10 @@ def attach_augmentation(
     *,
     augment_fn: BatchAugmentFn = apply_training_augmentation,
 ) -> tf.data.Dataset:
-    """Attach a batched augmentation function to a dataset."""
+    """Gan ham augmentation theo batch vao dataset."""
 
     def map_batch(images: tf.Tensor, labels: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
-        """Apply the configured augmentation inside tf.data."""
+        """Ap dung augmentation da cau hinh ben trong tf.data."""
         return augment_fn(images, labels, augmenter)
 
     return dataset.map(map_batch, num_parallel_calls=AUTOTUNE).prefetch(AUTOTUNE)

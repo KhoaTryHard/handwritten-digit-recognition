@@ -1,5 +1,5 @@
 # Module nay giu tuong thich nguoc cho helper tao duong dan theo project root.
-"""Backward-compatible project path helpers."""
+"""Helper duong dan project giu tuong thich nguoc."""
 
 from __future__ import annotations
 
@@ -13,10 +13,10 @@ PROJECT_ROOT = _project_file()
 
 
 def project_file(*parts: str) -> Path:
-    """Return a project-relative path."""
+    """Tra ve duong dan tinh tu project."""
     return _project_file(*parts)
 
 
 def project_path(*parts: str) -> str:
-    """Return a project-relative path as a string."""
+    """Tra ve duong dan tinh tu project o dang chuoi."""
     return _project_path(*parts)

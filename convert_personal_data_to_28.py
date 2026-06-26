@@ -1,5 +1,5 @@
 # Module nay chuyen anh viet tay goc sang dang 28x28 giong MNIST.
-"""Convert personal handwritten images into 28x28 MNIST-like samples."""
+"""Chuyen anh viet tay ca nhan thanh mau 28x28 giong MNIST."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ THRESHOLD = 0.22
 
 
 def main() -> None:
-    """Run the handwritten-image conversion pipeline."""
+    """Chay pipeline chuyen doi anh viet tay."""
     converted_images = convert_dataset_directory(
         SOURCE_DIR,
         DESTINATION_DIR,
