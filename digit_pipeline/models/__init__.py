@@ -1,5 +1,5 @@
 # Module nay xuat ra cac ham build kien truc CNN dung chung.
-"""Model builders for the digit pipeline."""
+"""Cac ham build model cho digit pipeline."""
 
 from digit_pipeline.models.cnn import build_base_digit_cnn
 

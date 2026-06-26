@@ -1,5 +1,5 @@
 # Module nay chua cac pipeline tf.data de nap va chuan hoa du lieu anh.
-"""Dataset builders for MNIST, EMNIST, and directory-based images."""
+"""Cac ham build dataset cho MNIST, EMNIST va anh dang thu muc."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ AUTOTUNE = tf.data.AUTOTUNE
 
 @dataclass(frozen=True)
 class DatasetBundle:
-    """Training and validation datasets with class names."""
+    """Dataset train va validation kem ten lop."""
 
     train_ds: tf.data.Dataset
     val_ds: tf.data.Dataset
@@ -32,7 +32,7 @@ class DatasetBundle:
 
 @dataclass(frozen=True)
 class EvaluationDatasetBundle:
-    """Evaluation datasets with file path ordering."""
+    """Dataset evaluation kem thu tu duong dan file."""
 
     raw_ds: tf.data.Dataset
     prepared_ds: tf.data.Dataset
@@ -45,7 +45,7 @@ def normalize_supervised_example(
     image: tf.Tensor,
     label: tf.Tensor,
 ) -> tuple[tf.Tensor, tf.Tensor]:
-    """Normalize a supervised example to float32 grayscale."""
+    """Chuan hoa mot supervised example thanh grayscale float32."""
     normalized_image = tf.cast(image, tf.float32) / 255.0
     if normalized_image.shape.rank == 2:
         normalized_image = tf.expand_dims(normalized_image, axis=-1)
@@ -56,7 +56,7 @@ def _cache_if_needed(
     dataset: tf.data.Dataset,
     cache_in_memory: bool,
 ) -> tf.data.Dataset:
-    """Cache a dataset when requested."""
+    """Cache dataset khi duoc yeu cau."""
     return dataset.cache() if cache_in_memory else dataset
 
 
@@ -68,7 +68,7 @@ def _prepare_unbatched_dataset(
     shuffle_buffer: int | None = None,
     cache_in_memory: bool = True,
 ) -> tf.data.Dataset:
-    """Normalize, optionally shuffle, batch, and prefetch a sample dataset."""
+    """Chuan hoa, tuy chon shuffle, batch va prefetch sample dataset."""
     normalized_dataset = dataset.map(
         normalize_supervised_example,
         num_parallel_calls=AUTOTUNE,
@@ -91,7 +91,7 @@ def _prepare_batched_dataset(
     *,
     cache_in_memory: bool = False,
 ) -> tf.data.Dataset:
-    """Normalize, optionally cache, and prefetch an already-batched dataset."""
+    """Chuan hoa, tuy chon cache va prefetch dataset da batch san."""
     normalized_dataset = dataset.map(
         normalize_supervised_example,
         num_parallel_calls=AUTOTUNE,
@@ -101,7 +101,7 @@ def _prepare_batched_dataset(
 
 
 def load_mnist_arrays() -> tuple[tuple[np.ndarray, np.ndarray], tuple[np.ndarray, np.ndarray]]:
-    """Return raw MNIST arrays for visualization or custom processing."""
+    """Tra ve mang MNIST raw cho visualization hoac xu ly tuy chinh."""
     return tf.keras.datasets.mnist.load_data()
 
 
@@ -111,7 +111,7 @@ def build_mnist_datasets(
     seed: int = DEFAULT_SEED,
     cache_in_memory: bool = True,
 ) -> DatasetBundle:
-    """Build tf.data datasets for MNIST."""
+    """Build tf.data dataset cho MNIST."""
     (train_images, train_labels), (test_images, test_labels) = load_mnist_arrays()
     train_ds = tf.data.Dataset.from_tensor_slices((train_images, train_labels))
     val_ds = tf.data.Dataset.from_tensor_slices((test_images, test_labels))
@@ -140,7 +140,7 @@ def load_emnist_datasets(
     seed: int = DEFAULT_SEED,
     cache_in_memory: bool = True,
 ) -> DatasetBundle:
-    """Build tf.data datasets for EMNIST digits."""
+    """Build tf.data dataset cho EMNIST digits."""
     train_ds, test_ds = tfds.load(
         "emnist/digits",
         split=["train", "test"],
@@ -166,7 +166,7 @@ def load_emnist_datasets(
 
 
 def directory_has_images(directory: str | Path) -> bool:
-    """Return whether a directory contains at least one supported image."""
+    """Tra ve viec thu muc co it nhat mot anh duoc ho tro hay khong."""
     resolved_directory = Path(directory)
     if not resolved_directory.is_dir():
         return False
@@ -183,7 +183,7 @@ def load_directory_datasets(
     seed: int = DEFAULT_SEED,
     cache_in_memory: bool = False,
 ) -> DatasetBundle:
-    """Load train and validation datasets from image directories."""
+    """Load dataset train va validation tu cac thu muc anh."""
     if directory_has_images(val_dir):
         train_raw = tf.keras.utils.image_dataset_from_directory(
             train_dir,
@@ -244,7 +244,7 @@ def load_evaluation_directory_dataset(
     *,
     image_size: tuple[int, int] = DIGIT_IMAGE_SIZE,
 ) -> EvaluationDatasetBundle:
-    """Load an evaluation dataset and preserve file ordering."""
+    """Load dataset evaluation va giu thu tu file."""
     raw_dataset = tf.keras.utils.image_dataset_from_directory(
         directory,
         color_mode="grayscale",

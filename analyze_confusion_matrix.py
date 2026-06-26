@@ -1,5 +1,5 @@
 # Module nay tong hop confusion matrix va cac chi so loi tren tap validation.
-"""Analyze the confusion matrix on the validation dataset."""
+"""Phan tich confusion matrix tren validation dataset."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ BATCH_SIZE = 64
 
 
 def main() -> None:
-    """Print confusion matrix statistics for the validation set."""
+    """In thong ke confusion matrix cho tap validation."""
     predictions = collect_directory_predictions(
         VAL_DIR,
         MODEL_PATH,

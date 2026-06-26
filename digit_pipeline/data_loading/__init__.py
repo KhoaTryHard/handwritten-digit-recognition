@@ -1,5 +1,5 @@
 # Module nay gom cac ham nap du lieu MNIST, EMNIST va thu muc anh ca nhan.
-"""Dataset loading utilities for the digit pipeline."""
+"""Tien ich load dataset cho digit pipeline."""
 
 from digit_pipeline.data_loading.datasets import (
     DatasetBundle,

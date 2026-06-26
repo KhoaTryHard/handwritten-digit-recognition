@@ -1,5 +1,5 @@
 # Module nay tap hop cac buoc augmentation va tien xu ly anh viet tay.
-"""Preprocessing helpers for augmentation and handwritten image cleanup."""
+"""Helper preprocessing cho augmentation va lam sach anh viet tay."""
 
 from digit_pipeline.preprocessing.augmentations import (
     add_speckle_noise,

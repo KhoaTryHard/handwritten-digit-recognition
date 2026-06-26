@@ -1,5 +1,5 @@
 # Module nay xuat anh cua mot cap nham lan cu the de quan sat truc quan.
-"""Export images for one chosen confusion pair."""
+"""Export anh cho mot cap nham lan da chon."""
 
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ TARGET_PRED = 3
 
 
 def main() -> None:
-    """Export image files for one confusion pair."""
+    """Export cac file anh cho mot cap nham lan."""
     predictions = collect_directory_predictions(
         VAL_DIR,
         MODEL_PATH,

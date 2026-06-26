@@ -1,5 +1,5 @@
 # Module nay tach mot phan du lieu viet tay goc tu train sang validation.
-"""Split the raw personal dataset into train and validation folders."""
+"""Tach dataset ca nhan raw thanh cac thu muc train va validation."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ CONFIG = DataSplitConfig(
 
 
 def main() -> None:
-    """Run the train/validation split for personal images."""
+    """Chay buoc tach train/validation cho anh ca nhan."""
     summary = split_personal_dataset(CONFIG)
 
     # In thong ke theo tung lop de de kiem tra bo du lieu sau khi tach.

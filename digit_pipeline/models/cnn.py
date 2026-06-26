@@ -1,5 +1,5 @@
 # Module nay dinh nghia kien truc CNN co the tai su dung cho ca 3 stage.
-"""CNN architectures for handwritten digit classification."""
+"""Kien truc CNN cho phan lop chu so viet tay."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ def build_base_digit_cnn(
     num_classes: int = NUM_DIGIT_CLASSES,
     dropout_rate: float = 0.25,
 ) -> tf.keras.Model:
-    """Build the baseline CNN used throughout the project."""
+    """Build CNN baseline duoc dung trong toan project."""
     inputs = layers.Input(shape=input_shape, name="image")
 
     # Khoi tich chap dau tien hoc cac net co ban cua chu so.

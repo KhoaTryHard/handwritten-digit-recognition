@@ -1,5 +1,5 @@
 # Module nay cau hinh seed va GPU memory growth cho TensorFlow.
-"""Runtime helpers for TensorFlow execution."""
+"""Helper runtime cho qua trinh chay TensorFlow."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from digit_pipeline.config.settings import RuntimeConfig
 
 
 def configure_runtime(config: RuntimeConfig | None = None) -> RuntimeConfig:
-    """Configure TensorFlow seed handling and GPU memory growth."""
+    """Cau hinh seed TensorFlow va GPU memory growth."""
     runtime_config = config or RuntimeConfig()
     tf.keras.utils.set_random_seed(runtime_config.seed)
 

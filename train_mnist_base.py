@@ -1,5 +1,5 @@
 # Module nay chay stage 1 de train CNN nen tren MNIST.
-"""Train the base MNIST digit classifier."""
+"""Train bo phan lop chu so MNIST nen."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ CONFIG = MnistTrainingConfig(
 
 
 def main() -> None:
-    """Run stage 1 training on MNIST."""
+    """Chay training stage 1 tren MNIST."""
     result = train_mnist_stage(CONFIG)
     if result.validation_accuracy is not None:
         print(f"Validation accuracy: {result.validation_accuracy * 100:.2f}%")

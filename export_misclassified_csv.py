@@ -1,5 +1,5 @@
 # Module nay xuat cac mau du doan sai ra CSV de phan tich chi tiet.
-"""Export misclassified validation samples to CSV."""
+"""Export mau validation bi du doan sai ra CSV."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ BATCH_SIZE = 64
 
 
 def main() -> None:
-    """Export all misclassified validation samples to CSV."""
+    """Export toan bo mau validation bi du doan sai ra CSV."""
     predictions = collect_directory_predictions(
         VAL_DIR,
         MODEL_PATH,

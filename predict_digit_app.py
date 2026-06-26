@@ -1,5 +1,5 @@
 # Module nay mo app desktop de chon anh, xem preview va ket qua du doan.
-"""Desktop app for handwritten digit prediction."""
+"""App desktop cho prediction chu so viet tay."""
 
 from __future__ import annotations
 
@@ -27,10 +27,10 @@ PREVIEW_SIZE = (320, 320)
 
 
 class DigitPredictionApp:
-    """Tkinter app for choosing an image and showing predictions."""
+    """App Tkinter de chon anh va hien thi prediction."""
 
     def __init__(self, root: tk.Tk) -> None:
-        """Initialize the UI and schedule model loading."""
+        """Khoi tao UI va len lich load model."""
         self.root = root
         self.root.title("Handwritten Digit Demo")
         self.root.geometry("980x680")
@@ -56,7 +56,7 @@ class DigitPredictionApp:
         self.root.after(100, self._load_model)
 
     def _build_ui(self) -> None:
-        """Build the application layout."""
+        """Dung layout cho ung dung."""
         style = ttk.Style()
         if "clam" in style.theme_names():
             style.theme_use("clam")
@@ -192,7 +192,7 @@ class DigitPredictionApp:
         status_bar.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(12, 0))
 
     def _load_model(self) -> None:
-        """Load the trained model in the background after startup."""
+        """Load model da train o background sau khi khoi dong."""
         try:
             self.model = load_digit_model(MODEL_PATH)
         except Exception as exc:
@@ -207,7 +207,7 @@ class DigitPredictionApp:
         self.status_var.set("Model loaded. Choose an image to start the demo.")
 
     def choose_image(self) -> None:
-        """Open a file dialog and trigger prediction for the chosen image."""
+        """Mo file dialog va kich hoat prediction cho anh da chon."""
         selected_path = filedialog.askopenfilename(
             title="Choose an image for prediction",
             filetypes=IMAGE_FILE_TYPES,
@@ -221,7 +221,7 @@ class DigitPredictionApp:
         self.predict_current_image()
 
     def predict_current_image(self) -> None:
-        """Run prediction for the current image and refresh the UI."""
+        """Chay prediction cho anh hien tai va cap nhat UI."""
         if self.current_image_path is None:
             messagebox.showinfo("No Image", "Choose an image first.")
             return
@@ -256,7 +256,7 @@ class DigitPredictionApp:
         self.status_var.set("Prediction complete.")
 
     def _update_prediction_ui(self, result: SingleImagePrediction) -> None:
-        """Update image previews and score labels."""
+        """Cap nhat preview anh va label diem so."""
         if self.current_image_path is None:
             return
 
@@ -272,7 +272,7 @@ class DigitPredictionApp:
             )
 
     def _show_original_preview(self, image_path: Path) -> None:
-        """Render the original image inside the left preview panel."""
+        """Render anh goc trong panel preview ben trai."""
         with Image.open(image_path) as image:
             display_image = image.convert("RGB")
         display_image.thumbnail(PREVIEW_SIZE, Image.Resampling.LANCZOS)
@@ -280,14 +280,14 @@ class DigitPredictionApp:
         self.original_panel.configure(image=self.original_photo, text="")
 
     def _show_processed_preview(self, image: Image.Image) -> None:
-        """Render the processed 28x28 preview inside the right panel."""
+        """Render preview 28x28 da xu ly trong panel ben phai."""
         display_image = image.resize(PREVIEW_SIZE, Image.Resampling.NEAREST).convert("L")
         self.processed_photo = ImageTk.PhotoImage(display_image)
         self.processed_panel.configure(image=self.processed_photo, text="")
 
 
 def main() -> None:
-    """Start the desktop prediction application."""
+    """Khoi dong ung dung desktop prediction."""
     root = tk.Tk()
     DigitPredictionApp(root)
     root.mainloop()

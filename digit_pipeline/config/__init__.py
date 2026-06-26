@@ -1,5 +1,5 @@
 # Module nay gom cac helper cau hinh va duong dan dung chung cho toan bo pipeline.
-"""Configuration helpers for the digit pipeline."""
+"""Helper cau hinh cho digit pipeline."""
 
 from digit_pipeline.config.paths import (
     PROJECT_ROOT,

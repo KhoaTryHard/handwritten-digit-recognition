@@ -1,5 +1,5 @@
 # Module nay chua dataclass cau hinh cho train base model va cac stage fine-tune.
-"""Dataclass-based training configuration objects."""
+"""Cac object cau hinh training dua tren dataclass."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from digit_pipeline.config.settings import DEFAULT_SEED, DIGIT_IMAGE_SIZE
 
 @dataclass(frozen=True, kw_only=True)
 class CallbackConfig:
-    """Shared callback settings for fine-tuning stages."""
+    """Thiet lap callback dung chung cho cac stage fine-tuning."""
 
     early_stopping_patience: int = 5
     plateau_factor: float = 0.5
@@ -21,7 +21,7 @@ class CallbackConfig:
 
 @dataclass(frozen=True, kw_only=True)
 class MnistTrainingConfig:
-    """Configuration for stage 1 MNIST training."""
+    """Cau hinh cho training MNIST stage 1."""
 
     output_model_path: Path
     batch_size: int = 64
@@ -32,7 +32,7 @@ class MnistTrainingConfig:
 
 @dataclass(frozen=True, kw_only=True)
 class TransferLearningConfig:
-    """Base configuration for loading and fine-tuning an existing model."""
+    """Cau hinh co so de load va fine-tune model hien co."""
 
     input_model_path: Path
     output_model_path: Path
@@ -45,7 +45,7 @@ class TransferLearningConfig:
 
 @dataclass(frozen=True, kw_only=True)
 class EmnistTrainingConfig(TransferLearningConfig):
-    """Configuration for stage 2 EMNIST fine-tuning."""
+    """Cau hinh cho fine-tuning EMNIST stage 2."""
 
     rotation: float = 0.10
     translation: float = 0.15
@@ -54,7 +54,7 @@ class EmnistTrainingConfig(TransferLearningConfig):
 
 @dataclass(frozen=True, kw_only=True)
 class DirectoryFineTuneConfig(TransferLearningConfig):
-    """Configuration for stage 3 directory-based fine-tuning."""
+    """Cau hinh cho fine-tuning stage 3 dua tren thu muc."""
 
     train_dir: Path
     val_dir: Path

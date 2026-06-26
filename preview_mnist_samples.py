@@ -1,5 +1,5 @@
 # Module nay hien thi nhanh cac mau MNIST cua mot chu so de so sanh truc quan.
-"""Preview MNIST samples for a chosen digit."""
+"""Preview mau MNIST cho mot chu so da chon."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ MAX_IMAGES = 25
 
 
 def main() -> None:
-    """Display a grid of MNIST samples for one digit."""
+    """Hien thi luoi mau MNIST cho mot chu so."""
     (_, _), (test_images, test_labels) = load_mnist_arrays()
     digit_indices = np.where(test_labels == TARGET_DIGIT)[0][:MAX_IMAGES]
 

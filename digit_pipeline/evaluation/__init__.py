@@ -1,5 +1,5 @@
 # Module nay gom logic suy luan, confusion matrix va xuat bao cao loi.
-"""Inference and evaluation helpers for the digit pipeline."""
+"""Helper inference va evaluation cho digit pipeline."""
 
 from digit_pipeline.evaluation.inference import (
     SingleImagePrediction,

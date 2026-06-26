@@ -1,5 +1,5 @@
 # Module nay chua helper liet ke anh va tao ten file dich khong bi trung.
-"""Small file-system helpers reused across scripts."""
+"""Helper file-system nho duoc tai su dung giua cac script."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from digit_pipeline.config.settings import IMAGE_EXTENSIONS
 
 
 def list_image_files(directory: str | Path, *, recursive: bool = False) -> list[Path]:
-    """Return image files inside a directory."""
+    """Tra ve cac file anh ben trong mot thu muc."""
     resolved_directory = Path(directory)
     iterator = resolved_directory.rglob("*") if recursive else resolved_directory.iterdir()
 
@@ -21,7 +21,7 @@ def list_image_files(directory: str | Path, *, recursive: bool = False) -> list[
 
 
 def build_unique_destination(destination: str | Path, *, label: str = "val") -> Path:
-    """Return a non-conflicting destination path."""
+    """Tra ve duong dan dich khong bi trung."""
     candidate = Path(destination)
     if not candidate.exists():
         return candidate

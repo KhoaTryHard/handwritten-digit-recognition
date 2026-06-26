@@ -1,5 +1,5 @@
 # Module nay tach mot phan anh train sang validation de dung lai o nhieu script.
-"""Helpers for splitting directory-based handwritten datasets."""
+"""Helper tach dataset viet tay dang thu muc."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from digit_pipeline.utils import build_unique_destination, list_image_files
 
 @dataclass(frozen=True, kw_only=True)
 class DataSplitConfig:
-    """Configuration for moving train images into a validation directory."""
+    """Cau hinh de chuyen anh train vao thu muc validation."""
 
     train_dir: Path
     val_dir: Path
@@ -24,14 +24,14 @@ class DataSplitConfig:
 
 @dataclass(frozen=True)
 class SplitSummary:
-    """Summary of a train/validation split operation."""
+    """Tom tat thao tac tach train/validation."""
 
     moved_per_class: dict[str, int]
     total_moved: int
 
 
 def split_personal_dataset(config: DataSplitConfig) -> SplitSummary:
-    """Move a portion of each digit folder from train to validation."""
+    """Chuyen mot phan moi thu muc chu so tu train sang validation."""
     if not config.train_dir.is_dir():
         raise FileNotFoundError(f"Missing training directory: {config.train_dir}")
 

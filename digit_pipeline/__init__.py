@@ -1,5 +1,5 @@
 # Module nay khoi tao package va thiet lap bien moi truong TensorFlow mac dinh.
-"""Top-level package for the handwritten digit recognition pipeline."""
+"""Package cap cao nhat cho pipeline nhan dang chu so viet tay."""
 
 from __future__ import annotations
 
